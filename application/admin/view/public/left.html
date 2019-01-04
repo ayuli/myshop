@@ -1,0 +1,19 @@
+<div class="layui-side layui-bg-black">
+  <div class="layui-side-scroll">
+    {/*左侧导航区域（可配合layui已有的垂直导航）*/}
+    <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+
+      {volist name= 'aaainfo' id='v'}
+      <li class="layui-nav-item">
+        <a class="" href="javascript:;">{$v.node_name}</a>
+        <dl class="layui-nav-child">
+          {volist name= "v.son" id='vv'}
+          <dd><a href='{:url("$vv[controller_name]/$vv[action_name]")}'>{$vv.node_name}</a></dd>
+          {/volist}
+        </dl>
+      </li>
+      {/volist}
+
+    </ul>
+  </div>
+</div>

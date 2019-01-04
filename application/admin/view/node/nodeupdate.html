@@ -1,0 +1,104 @@
+{/*内容主体区域*/}
+<div style="padding: 15px; width:500px">
+    {/*内容主体区域*/}
+    <div style="padding: 15px; width:500px">
+        <form class="layui-form" action="">
+            <input type="hidden" name="node_id" id="node_id" value="{$arr.node_id}" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">节点名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="node_name" required value="{$arr.node_name}"    placeholder="请输入节点名称" autocomplete="off" class="layui-input">
+                </div>{/*lay-verify="required|checkName"*/}
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">控制器名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="controller_name" required value="{$arr.controller_name}"    placeholder="请输入控制器名称" autocomplete="off" class="layui-input">
+                </div>{/*lay-verify="required|checkName"*/}
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否展示</label>
+                <div class="layui-input-block">
+                    {if condition="$arr.node_type  eq  1"}
+                    <input type="radio" title="是" value="1" name="node_type" checked>
+                    <input type="radio" title="否" value="2" name="node_type">
+                    {else/}
+                    <input type="radio" title="是" value="1" name="node_type">
+                    <input type="radio" title="否" value="2" name="node_type" checked>
+                    {/if}
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">操作名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="action_name" required value="{$arr.action_name}"    placeholder="请输入操作名称" autocomplete="off" class="layui-input">
+                </div>{/*lay-verify="required|checkName"*/}
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">父分类</label>
+                <div class="layui-input-block">
+                    <select name="pid" lay-verify="required" >
+                        <option value="0">--请选择--</option>
+                        {volist name="info" id="v"}
+                        {if condition="$v['node_id']  eq  $arr['pid']"}
+                        <option value="{$v.node_id}" selected>
+                            {$v.node_name}
+                        </option>
+                        {else/}
+                        <option value="{$v.node_id}" >
+                            {$v.node_name}
+                        </option>
+                        {/if}
+                        {/volist}
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">立即修改</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $(function(){
+        layui.use(['form','layer'], function(){
+            var form = layui.form;
+            var layer = layui.layer;
+            var node_id = $('#node_id').val();
+            /*监听提交 提交数据*/
+            form.on('submit(formDemo)', function(data){
+
+                $.post(
+                    "{:url('Node/nodeUpdate')}",
+                    data.field,
+                    function(result){
+                        layer.msg(result.font,{icon:result.code});
+                        if (result.code==1) {
+                            layer.open({
+                                type:0,
+                                content:'修改成功,是否进入列表展示?',
+                                anim: 5,
+                                btn:['确定','继续修改'],
+                                yes:function(index,layero)
+                                {
+                                    location.href= "{:url('Node/nodeList')}";
+                                },
+                                btn2:function(index,layero){
+                                    location.href= "{:url('Node/nodeUpdate')}";
+                                },
+
+                            });
+
+                        }
+                    },
+                    'json'
+                );
+                return false;
+            });
+        });
+
+    })
+</script>

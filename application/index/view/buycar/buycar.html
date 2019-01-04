@@ -1,0 +1,490 @@
+{include file="public/top"}
+<script type="text/javascript" src="__STATIC__/index/js/n_nav.js"></script>
+<div class="i_bg">
+    <div class="content mar_20">
+    	<img src="__STATIC__/index/images/img1.jpg" />        
+    </div>
+    <!--Begin 第一步：查看购物车 Begin -->
+<div class="content mar_20">
+    <table id="tab" border="0" class="car_tab" style="width:1200px; margin-bottom:50px;" cellspacing="0" cellpadding="0">
+        <tr>
+            <td class="car_th" width="40"></td>
+            <td class="car_th" width="400">商品名称</td>
+            <td class="car_th" width="140">单价</td>
+            <td class="car_th" width="150">购买数量</td>
+            <td class="car_th" width="130">小计</td>
+            <td class="car_th" width="150">操作</td>
+        </tr>
+        {/*class="car_tr"*/}
+            {volist name="carInfo" id="v"}
+            <tr class="ull" goods_id="{$v.goods_id}">
+                <td>
+                    {if condition="$Think.session.accInfo  eq  ''"}
+                    <input type="checkbox" style="width: 20px;height: 20px;" class="check" goods_id="{$v.goods_id}" float="1">
+                    {else/}
+                    <input type="checkbox" style="width: 20px;height: 20px;" class="check" cart_id="{$v.cart_id}">
+                    {/if}
+                </td>
+                <td>
+                    <div class="c_s_img"><img src="__ROOT__/goodsimg/{$v.goods_img}" width="73" height="73" /></div>
+                    {$v.goods_name}
+                </td>
+                <td align="center" style="color:#ff4e00;" class="price">{$v.self_price}</td>
+                <td align="center">
+                    <div class="c_num">
+                        <input type="hidden" class="goods_num" value="{$v.goods_num}">
+                        <input type="button" value="" class="car_btn_1 chang_num" float="2"/>{/*onclick="jianUpdate1(jq(this));"*/}
+                        <input type="text" value="{$v.buy_number}" name="" class="car_ipt ipt" />
+                        <input type="button" value="" class="car_btn_2 chang_num" float="1"/>{/* onclick="addUpdate1(jq(this));"*/}
+                    </div>
+                </td>
+                <td align="center" style="color:#ff4e00;" price="{$v.self_price}" class="number">{$v.self_price*$v.buy_number}</td>
+                {if condition="$Think.session.accInfo  eq  ''"}
+                <td align="center"><a href="javascript:;" class="del" goods_id="{$v.goods_id}">删除</a>&nbsp; &nbsp;<a href="javascript:;"  class="collection">加入收藏</a></td>
+                {else/}
+                <td align="center"><a href="javascript:;" class="del" cart_id="{$v.cart_id}">删除</a>&nbsp; &nbsp;<a href="javascript:;" cart_id="{$v.cart_id}" goods_id="{$v.goods_id}" class="collection">加入收藏</a></td>
+                {/if}
+            </tr>
+            {/volist}
+
+        <tr height="70">
+            <td colspan="6" style="font-family:'Microsoft YaHei'; border-bottom:0;">
+                <label class="r_rad"><input type="checkbox" name="clear" style="width: 20px;height: 20px;" id="allSelect"></label><label class="r_txt"style="font-size: 18px;">全选</label>
+                <label class="r_rad"></label><button class="collections" >批量收藏</button>
+                <label class="r_rad"></label><button class="ncoll" >批量清空</button>
+                <span class="fr"style="font-size:22px;">
+                    已选购<b style="font-size:22px; color:#ff4e00;" id="count">0</b>件&nbsp;&nbsp;
+                    商品总价：￥<b style="font-size:22px; color:#ff4e00;" id="sum">0</b>
+                </span>
+            </td>
+        </tr>
+        <tr valign="top" height="150">
+            <td colspan="6" align="right">
+                &nbsp; &nbsp; <a href="javascript:;" id="settlement"><img src="__STATIC__/index/images/buy2.gif" /></a>
+            </td>
+        </tr>
+    </table>
+        
+</div>
+	<!--End 第一步：查看购物车 End-->
+    <!--Begin 弹出层-删除商品 Begin-->
+<div id="fade" class="black_overlay"></div>
+<div id="MyDiv" class="white_content">             
+    <div class="white_d">
+        <div class="notice_t">
+            <span class="fr" style="margin-top:10px; cursor:pointer;" onclick="CloseDiv('MyDiv','fade')"><img src="__STATIC__/index/images/close.gif" /></span>
+        </div>
+        <div class="notice_c">
+            
+        <table border="0" align="center" style="font-size:16px;" cellspacing="0" cellpadding="0">
+            <tr valign="top">
+                <td>您确定要把该商品移除购物车吗？</td>
+            </tr>
+            <tr height="50" valign="bottom">
+                <td><a href="#" class="b_sure">确定</a><a href="#" class="b_buy">取消</a></td>
+            </tr>
+        </table>
+                
+        </div>
+    </div>
+</div>    
+    <!--End 弹出层-删除商品 End-->
+<script>
+    // $(function () {
+    //     //加
+    //     $(document).on('click','.add',function () {
+    //         var _this = $(this);
+    //         var addipt =  parseFloat(_this.prev().val());
+    //         var goods_num = _this.prevAll("input[class='goods_num']").val();
+    //         _this.prevAll("input[class='car_btn_1 subtract']").prop('disabled',false);
+    //         var number = _this.parents("td[align='center']").next().attr('price');
+    //         number = number*addipt;
+    //         _this.parents("td[align='center']").next().text(number);
+    //         if(addipt>=goods_num){
+    //             _this.prop('disabled',true);
+    //             _this.prev().val(goods_num);
+    //         }else{
+    //             addipt=addipt+1;
+    //             _this.prev().val(addipt);
+    //         }
+    //         number = _this.parents("td[align='center']").next().attr('price');
+    //         addipt =  parseFloat(_this.prev().val());
+    //         number =number*addipt;
+    //         //小计
+    //         _this.parents("td[align='center']").next().text(number.toFixed(2));
+    //         //加 改变总价
+    //         var thisch = _this.parents("tr[class=ull]").find("input[type=checkbox]")
+    //         if(thisch.prop('checked')==true){
+    //             // var price = parseFloat($(this).parents("tr[class=ull]").find("td[class*=number]").text());
+    //             //单价
+    //             var dan = parseFloat($(this).parents("tr[class=ull]").find("td[class*=price]").text());
+    //             var price = parseFloat($("#sum").text())+dan;
+    //             $("#sum").text(price.toFixed(2));
+    //
+    //             // var xiji = parseFloat($(this).parents("tr[class=ull]").find("td[class*=number]").text());
+    //             // //单价
+    //             // if(addipt=goods_num){
+    //             //     $("#sum").text(xiji.toFixed(2));
+    //             // }else{
+    //             //     var dan = parseFloat($(this).parents("tr[class=ull]").find("td[class*=price]").text());
+    //             //     var price = parseFloat($("#sum").text())+dan;
+    //             //     $("#sum").text(price.toFixed(2));
+    //             // }
+    //
+    //         }
+    //     })
+    //     //减
+    //     $(document).on('click','.subtract',function () {
+    //         var _this = $(this);
+    //         var subtractipt =  parseFloat(_this.next().val());
+    //         var goods_num = _this.prev().val();
+    //         _this.nextAll("input[class='car_btn_2 add']").prop('disabled',false);
+    //         if(subtractipt<=1){
+    //             _this.prop('disabled',true)
+    //         }else{
+    //             subtractipt=subtractipt-1;
+    //             _this.next().val(subtractipt);
+    //         }
+    //         var number = _this.parents("td[align='center']").next().attr('price');
+    //         subtractipt =  parseFloat(_this.next().val());
+    //         number =number*subtractipt;
+    //         // 减 小计
+    //         _this.parents("td[align='center']").next().text(number.toFixed(2));
+    //         // 减 改变总价
+    //         var thisch = _this.parents("tr[class=ull]").find("input[type=checkbox]");
+    //         if(thisch.prop('checked')==true){
+    //             //单价
+    //             var dan = parseFloat($(this).parents("tr[class=ull]").find("td[class*=price]").text());
+    //             var price = parseFloat($("#sum").text())-dan;
+    //             $("#sum").text(price.toFixed(2));
+    //         }
+    //     });
+    //     //
+    //     function setTotal(){
+    //         var summ = 0;
+    //         $("#tab div[class=c_num]").each(function(){
+    //             // var dan = parseFloat($(this).find("tr[class=ull]").find("td[class*=price]").text());
+    //             // var numm = parseFloat($(this).find("input[type*=text]").val());
+    //             var price = parseFloat($(this).parents("tr[class=ull]").find("td[class*=number]").text());
+    //             summ += price;
+    //         })
+    //         $("#sum").text(summ.toFixed(2));
+    //     }
+    //     // 失去焦点
+    //     $(document).on('blur','.ipt',function () {
+    //         var _this = $(this);
+    //         var ipt =  _this.val();
+    //         var goods_num = _this.prevAll("input[class='goods_num']").val();
+    //         var reg=/^[1-9]\d{0,}$/;
+    //         if(!reg.test(ipt)){
+    //             ipt = parseFloat(ipt);
+    //             _this.val(ipt);
+    //         }
+    //         if(parseFloat(ipt)>parseFloat(goods_num)){
+    //             _this.val(goods_num);
+    //         }
+    //         var number = _this.parents("td[align='center']").next().attr('price');
+    //         ipt =  _this.val();
+    //         number =number*ipt;
+    //         _this.parents("td[align='center']").next().text(number);
+    //         //失去焦点 改
+    //         var thisch = _this.parents("tr[class=ull]").find("input[type=checkbox]")
+    //         if(thisch.prop('checked')==true){
+    //             var price = parseFloat($(this).parents("tr[class=ull]").find("td[class*=number]").text());
+    //             $("#sum").text(price);
+    //         }
+    //
+    //     });
+    //     //全选
+    //     $("#allSelect").click(function(){
+    //         var _this = $(this);
+    //         var _length = $('.add').length;
+    //         var _checked = _this.prop('checked');
+    //         var checkedall = $(".ull input[type=checkbox]");
+    //         for(var i=0;i<_length;i++){
+    //             if(_checked==true){
+    //                 checkedall.eq(i).prop('checked',true);
+    //                 setTotal();
+    //             }else{
+    //                 checkedall.eq(i).prop('checked',false)
+    //                 $('#sum').text(0)
+    //             }
+    //         }
+    //
+    //
+    //     });
+    //     // 单选算总价
+    //     $(document).on('click','.check',function () {
+    //         var _this = $(this)
+    //         // var _length = $('.add').length;
+    //         // // 选中后加入价格
+    //         if(_this.prop('checked')==true){
+    //             var textsum = $('#sum').text();
+    //             var oneprice = parseFloat(_this.parents("tr[class=ull]").find("td[class*=number]").text());
+    //             var sum = parseFloat(textsum)+oneprice;
+    //             $('#sum').text(sum)
+    //         }else{
+    //             var textsum = $('#sum').text();
+    //             var oneprice = parseFloat(_this.parents("tr[class=ull]").find("td[class*=number]").text());
+    //             var sum = parseFloat(textsum)-oneprice;
+    //             $('#sum').text(sum)
+    //         }
+    //     });
+    //
+    // })
+</script>
+<script>
+$(function () {
+
+    $(document).on('click','.chang_num',function () {
+        var _this = $(this);
+        if(_this.attr('float')==1){
+            setadd(_this);
+            var ipt =  parseInt(_this.prev().val());
+        }else{
+            setsubtract(_this);
+            var ipt = parseInt(_this.next().val());
+        }
+        // 小计
+        setdan(_this);
+        // 点击加减 循环复选框 获取true 的加入总价
+        setsum(_this);
+        // 加减ajax要去php更改数量
+        var cart_id = _this.parents('tr').first().find('input').attr('cart_id');
+        var goods_id = _this.parents('tr').first().find('input').attr('goods_id');
+        carupdate(ipt,cart_id,goods_id)
+    });
+    function carupdate(ipt,cart_id,goods_id){
+        $.post(
+            "{:url('Buycar/cartUpdate')}",
+            {ipt:ipt,cart_id:cart_id,goods_id:goods_id},
+            function (result) {
+                if(result!=true){
+                    alert("数据错误")
+                }
+            }
+        )
+    }
+    // 加计算
+    function setadd(_this) {
+        var addipt =  parseFloat(_this.prev().val());
+        var goods_num = _this.prevAll("input[class='goods_num']").val();
+        _this.prevAll("input[class='car_btn_1 subtract']").prop('disabled',false);
+        if(addipt>=goods_num){
+            _this.prop('disabled',true);
+            _this.prev().val(goods_num);
+        }else{
+            addipt+=1;
+            _this.prev().val(addipt);
+        }
+    }
+    // 减计算
+    function setsubtract(_this) {
+        var subtractipt = parseFloat(_this.next().val());
+        _this.nextAll("input[class='car_btn_2 add']").prop('disabled', false);
+        if (subtractipt <= 1) {
+            _this.prop('disabled', true)
+        } else {
+            subtractipt -=1;
+            _this.next().val(subtractipt);
+        }
+    }
+    // 小计
+    function setdan(_this) {
+        // 单价↓
+        var dan = parseFloat(_this.parents("tr[class=ull]").find("td[class*=price]").text());
+        var number = _this.parents("div[class=c_num]").find("input[type=text]").val();
+        var numbers = number*dan;
+        // 小计↓
+        _this.parents("tr[class=ull]").find("td[class=number]").text(numbers.toFixed(2));
+        // 复选框要选中
+        _this.parents("tr[class=ull]").find("input[class=check]").prop('checked',true)
+    }
+    // 点击加减 循环复选框 获取true 的加入总价
+    function setsum(_this) {
+        var thisch = _this.parents("tr[class=ull]").find("input[type=checkbox]");
+        var price=0;
+        var sumber=0;
+        $(".check").each(function (index) {
+            if($(this).prop('checked')==true){
+                var num = $(this).parents("tr").find("td[class=number]").text();
+                price +=parseFloat(num);
+                var count = $(this).parents("tr").find("input[type=text]").val();
+                sumber +=parseInt(count);
+            }
+        });
+            $("#sum").text(price.toFixed(2));
+            $("#count").text(sumber);
+    }
+    // 全选
+    $("#allSelect").click(function(){
+        var _this = $(this);
+        var _checked = _this.prop('checked');
+        var checkedall = $(".ull input[type=checkbox]");
+        var _length = checkedall.length;
+        for(var i=0;i<_length;i++){
+            if(_checked==true){
+                checkedall.eq(i).prop('checked',true);
+                // setTotal();
+                setsum(_this)
+            }else{
+                checkedall.eq(i).prop('checked',false)
+                $('#sum').text(0)
+                $("#count").text(0);
+            }
+        }
+    });
+    // 单选算总价
+    $(document).on('click','.check',function () {
+        var _this = $(this)
+        // 选中后加入价格
+        setsum(_this)
+    });
+    // 失去焦点
+    $(document).on('blur','.ipt',function () {
+        var _this = $(this);
+        var ipt =  _this.val();
+        var goods_num = _this.prevAll("input[class='goods_num']").val();
+        var reg=/^[1-9]\d{0,}$/;
+        if(!reg.test(ipt)){
+            _this.val(1);
+        }
+        if(parseInt(ipt)>parseInt(goods_num)){
+            _this.val(goods_num);
+        }
+        setdan(_this)
+        setsum(_this)
+        // 加减ajax要去php更改数量
+        var cart_id = _this.parents('tr').first().find('input').attr('cart_id');
+        var goods_id = _this.parents('tr').first().find('input').attr('goods_id');
+        carupdate(ipt,cart_id,goods_id)
+    });
+    //删除
+    $(document).on('click','.del',function () {
+        var _this = $(this);
+        _this.parents('tr').remove()
+        var cart_id = _this.attr('cart_id')
+        var goods_id = _this.attr('goods_id')
+        $.post(
+            "{:url('Buycar/carDel')}",
+            {cart_id:cart_id,goods_id:goods_id},
+            function (result) {
+                // console.log(result)
+                if(result==1){
+                    alert('删除成功');
+                }else{
+                    alert('删除失败');
+                }
+            }
+        )
+    });
+    // 收藏
+    $(document).on('click','.collection',function () {
+        var _this = $(this);
+        var cart_id = _this.attr('cart_id');
+        var goods_id = _this.parents('tr').attr('goods_id');
+        $.post(
+            "{:url('Buycar/collection')}",
+            {cart_id:cart_id,goods_id:goods_id,type:1},
+            function (result) {
+                if(result==1){
+                    alert("加入收藏")
+                }else if(result==2){
+                    alert("数据有误")
+                }else if(result==3){
+                    alert("已收藏")
+                }else if(result=4){
+                    alert("请先登陆")
+                }
+            }
+        )
+
+    })
+    // 批量收藏
+    $(document).on('click','.collections',function () {
+        var _this = $(this);
+        // var goods_id = _this.parents('tr').attr('goods_id');
+        var _id='';
+        $(".check").each(function (index) {
+            if($(this).prop('checked')==true){
+                var goods_id = $(this).attr('cart_id');
+                _id +=','+goods_id;
+            }
+        });
+        _id =_id.substr(1)
+        $.post(
+            "{:url('Buycar/collection')}",
+            {goods_id:_id,type:2},
+            function (result) {
+                if(result==1){
+                    alert("收藏成功")
+                }else if(result==4){
+                    alert("请先登陆")
+                }else{
+                    alert("收藏已存在")
+
+                }
+            }
+        )
+
+    })
+    //批量清空商品
+    $(document).on('click','.ncoll',function () {
+        var _this = $(this);
+        var _id='';
+        var g_id='';
+        $(".check").each(function (index) {
+            if($(this).prop('checked')==true){
+                var cart_id = $(this).attr('cart_id');
+                _id +=','+cart_id
+                $(this).parents('tr').remove()
+                var goods_id = $(this).attr('goods_id');
+                g_id +=','+goods_id
+            }
+        });
+        _id =_id.substr(1);
+        g_id =g_id.substr(1);
+
+        $.post(
+            "{:url('Buycar/cartNone')}",
+            {cart_id:_id,goods_id:g_id},
+            function (result) {
+                // console.log(result)
+                if(result==1){
+                    alert("成功")
+                }else{
+                    alert("失败")
+                }
+            }
+        )
+
+    })
+    // 确认订单
+    $('#settlement').click(function () {
+        var _this = $(this);
+        var settl = $('#sum').text();
+        var float = $('tr[class=ull]').first().find('input').attr('float');
+        if(float==1){
+            alert('请先登陆');
+            return false
+        }
+        if(settl==0){
+            alert('请选要结算的商品');
+            return false
+        }
+        //拿到选中的商品
+        var _id='';
+        $(".check").each(function (index) {
+            if($(this).prop('checked')==true){
+                var cart_id = $(this).attr('cart_id');
+                _id += ','+cart_id;
+            }
+        });
+        _id = _id.substr(1);
+        // console.log(_id)
+        // 把数据送到php
+        location.href="{:url('Buycar/carteSttlement')}?cart_id="+_id
+    })
+
+})
+</script>

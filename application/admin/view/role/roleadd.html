@@ -1,0 +1,110 @@
+<div style="padding: 15px; width:800px">
+    <form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">角色名称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="role_name" required lay-verify="required" placeholder="角色名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">权限节点</label>
+        <div class="layui-input-block">
+            {volist name="nodeInfo" id="v"}
+            <fieldset class="layui-elem-field">
+                <legend>
+                    <input type="checkbox" name="node_id[]" title="{$v.node_name}" value="{$v.node_id}" lay-skin="primary" lay-filter="filter">
+                </legend>
+                <div class="layui-field-box">
+                    {volist name="v.son" id="vv"}
+                    <input type="checkbox" name="node_id[]" title="{$vv.node_name}" value="{$vv.node_id}" lay-skin="primary" lay-filter="text">
+                    {/volist}
+                </div>
+            </fieldset>
+            {/volist}
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+</div>
+
+<script>
+    $(function () {
+        //Demo
+        layui.use(['form','layer'], function(){
+            var form = layui.form;
+            var layer = layui.layer;
+
+            // 全部复选监听
+            form.on('checkbox(filter)', function(data){
+                var _this=$(this)
+                if(data.elem.checked==true){
+                    _this.parent().next().find("input").prop('checked',true)
+                }else{
+                    _this.parent().next().find("input").prop('checked',false)
+                }
+                form.render(); //更新全部
+            });
+            // 单个复选监听
+            form.on('checkbox(text)', function(data){
+                var _this = $(this);
+                // console.log(_this)
+                if(data.elem.checked==true){
+                    _this.parent().prev().find('input').prop('checked',true)
+                }else{
+                    //判断当前节点的所有兄弟节点
+                    var num=0;
+                    var _input = _this.siblings('input');
+                    _input.each(function(index) {
+                        if($(this).prop('checked')==false){
+                            num+=1;
+                        }
+                        if(num==_input.length){
+                            _this.parent().prev().find('input').prop('checked',false)
+                        }
+
+                    })
+                }
+
+                form.render(); //更新全部
+            });
+
+
+            // 监听提交
+            form.on('submit(formDemo)', function(data){
+                $.post(
+                    "{:url('Role/roleAdd')}",
+                    data.field,
+                    function (result) {
+                        layer.msg(result.font,{icon:result.code});
+                        if(result.code==1){
+                            layer.open({
+                                type:0,
+                                content:'添加成功,是否进入列表展示?',
+                                anim: 5,
+                                btn:['确定','继续添加'],
+                                yes:function(index,layero)
+                                {
+                                    location.href= "{:url('Role/roleList')}";
+                                },
+                                btn2:function(index,layero){
+                                    location.href= "{:url('Role/roleAdd')}";
+                                },
+
+                            });
+                        }
+                    },'json'
+                )
+                return false;
+            });
+        });
+    })
+
+
+    $('#g').attr('class','layui-nav-item layui-nav-itemed')
+    $('#g1').attr('class','layui-this')
+</script>

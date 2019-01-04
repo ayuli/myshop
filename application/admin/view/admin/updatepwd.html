@@ -1,0 +1,62 @@
+{/*内容主体区域*/}
+<div style="padding: 15px; width:500px">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">原密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="old_pwd" required   placeholder="请输入原密码" autocomplete="off" class="layui-input">{/*lay-verify="required|checkPwd"*/}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">新密码</label>
+            <div class="layui-input-inline" style="width: 290px;">
+                <input type="password" name="new_pwd1" placeholder="请输入新密码" autocomplete="off" class="layui-input">
+            </div>{/*lay-verify="required|checkPwd"*/}
+            <div class="layui-form-mid layui-word-aux">密码最少6位</div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">确认密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="new_pwd2" required   placeholder="请输入确认密码" autocomplete="off" class="layui-input">{/*lay-verify="required|checkPwd"*/}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即修改</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(function(){
+        layui.use(['form','layer'], function(){
+            var form = layui.form;
+            var layer = layui.layer;
+            //验证
+            form.verify({
+
+            })
+            /*监听提交 提交数据*/
+            form.on('submit(formDemo)', function(data){
+                // layer.msg(JSON.stringify(data.field));
+                $.post(
+                    "{:url('Admin/updatePwd')}",
+                    data.field,
+                    function(result){
+                        // console.log(result)
+                        layer.msg(result.font,{icon:result.code});
+                        if (result.code==1) {
+                            location.href="{:url('Login/quit')}";
+                        }
+                    },
+                    'json'
+                );
+                return false;
+            });
+        });
+        $('#f').attr('class','layui-nav-item layui-nav-itemed')
+        $('#f2').attr('class','layui-this')
+
+    })
+</script>

@@ -1,0 +1,92 @@
+{/*内容主体区域*/}
+<div style="padding: 15px; width:500px">
+    <form class="layui-form" action="">
+        <input type="hidden" name="brand_id" value="{$data.brand_id}">
+        <div class="layui-form-item">
+            <label class="layui-form-label">品牌名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="brand_name" required  value="{$data.brand_name}" placeholder="请输入品牌名称" autocomplete="off" class="layui-input">
+            </div><!--lay-verify="required"-->
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">品牌网址</label>
+            <div class="layui-input-block">
+                <input type="text" name="brand_url" required  value="{$data.brand_url}" placeholder="请输入品牌网址" autocomplete="off" class="layui-input">
+            </div><!--lay-verify="required"-->
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">品牌logo</label>
+            <div class="layui-input-block">
+                <input type="hidden" name="brand_logo" required value="{$data.brand_logo}" autocomplete="off" class="layui-input" id="brand_logo">
+                <button type="button" class="layui-btn" id="logo">
+                    <i class="layui-icon">&#xe67c;</i>上传图片
+                </button>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">品牌描述</label>
+            <div class="layui-input-block">
+                <textarea name="brand_describe" required  placeholder="请输入品牌描述" class="layui-textarea">{$data.brand_describe}</textarea>
+            </div><!--lay-verify="required"-->
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否展示</label>
+            <div class="layui-input-block">
+                <?php if($data['is_show']==1){ ?>
+                <input type="radio" name="is_show" value="1" title="是" checked>
+                <input type="radio" name="is_show" value="2" title="否">
+                <?php }else{?>
+                <input type="radio" name="is_show" value="1" title="是">
+                <input type="radio" name="is_show" value="2" title="否" checked>
+                <?php }?>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(function(){
+        layui.use(['form','layer','upload'],function (){
+            var form = layui.form;
+            var layer = layui.layer;
+            var upload = layui.upload;
+            //执行实例 上传文件
+            var uploadInst = upload.render({
+                elem: '#logo' //绑定元素
+                ,url: "{:url('Brand/brandLogo')}" //上传接口
+                ,done: function(res){
+                    layer.msg(res.font,{icon:res.code});
+                    if (res.code==1) {
+                        $('#brand_logo').val(res.src);
+                    }
+                }
+            });
+            //监听提交
+            form.on('submit(formDemo)', function(data){
+                $.post(
+                    "{:url('Brand/brandUpdate')}",
+                    data.field,  //所有name值
+                    function(res){
+                        // console.log(res)
+                        layer.msg(res.font,{icon:res.code});
+                        if (res.code==1){
+                            layer.confirm('修改成功,是否进入列表展示?', {icon: 1, title:'提示'},function(){
+                                location.href= "{:url('Brand/brandList')}";
+                            })
+                        }
+                    },
+                    'json'
+                )
+                return false;
+            });
+        })
+        //分类展示栏
+        $('#b').attr('class','layui-nav-item layui-nav-itemed')
+        $('#b2').attr('class','layui-this')
+    })
+</script>

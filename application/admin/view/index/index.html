@@ -1,0 +1,91 @@
+<!--<div style="padding: 15px;">-->
+  <!--<div class="layui-carousel" id="test1">-->
+    <!--<div carousel-item>-->
+      <!--<div class="layui-this"><img src="__STATIC__/190839.png"></div>-->
+      <!--<div class=""><img src="__STATIC__/48_1541581937757_55730.jpg"></div>-->
+      <!--<div class=""><img src="__STATIC__/268_1541592365383_56715.jpg"></div>-->
+      <!--<div class=""><img src="__STATIC__/368_1541609111568_44876.jpg"></div>-->
+      <!--<div class=""><img src="//res.layui.com/images/layui/demo/7.png"></div>-->
+    <!--</div>-->
+  <!--</div>-->
+  <!--&lt;!&ndash;<img src="__STATIC__/190839.png" alt="首页" width="500px">&ndash;&gt;-->
+  <!--&lt;!&ndash;<img src="__STATIC__/48_1541581937757_55730.jpg" alt="首页" width="500px">&ndash;&gt;-->
+  <!--&lt;!&ndash;<img src="__STATIC__/268_1541592365383_56715.jpg" alt="首页" width="500px">&ndash;&gt;-->
+  <!--&lt;!&ndash;<img src="__STATIC__/368_1541609111568_44876.jpg" alt="首页" width="500px">&ndash;&gt;-->
+<!--</div>-->
+<!--<script>-->
+    <!--layui.use(['form','layer','upload'], function() {-->
+        <!--var form = layui.form;-->
+        <!--var layer = layui.layer;-->
+        <!--var upload = layui.upload;-->
+        <!--layer.open({-->
+            <!--type: 1,-->
+            <!--title: false, //不显示标题栏-->
+            <!--closeBtn: false,-->
+            <!--area: '300px;',-->
+            <!--shade: 0.8,-->
+            <!--id: 'LAY_layuipro', //设定一个id，防止重复弹出-->
+            <!--btn: ['火速围观', '残忍拒绝'],-->
+            <!--btnAlign: 'c',-->
+            <!--moveType: 1, //拖拽模式，0或者1-->
+            <!--content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;">欢迎登陆layer首页<br>layer ≠ layui<br><br>layer只是作为Layui的一个弹层模块，由于其用户基数较大，所以常常会有人以为layui是layerui<br><br>layer虽然已被 Layui 收编为内置的弹层模块，但仍然会作为一个独立组件全力维护、升级。<br><br>我们此后的征途是星辰大海 ^_^</div>',-->
+            <!--success: function (layero) {-->
+                <!--var btn = layero.find('.layui-layer-btn');-->
+                <!--btn.find('.layui-layer-btn0').attr({-->
+                    <!--href: 'http://www.layui.com/'-->
+                    <!--, target: '_blank'-->
+                <!--});-->
+            <!--}-->
+        <!--});-->
+    <!--})-->
+<!--</script>-->
+<!--<script>-->
+    <!--layui.use('carousel', function(){-->
+        <!--var carousel = layui.carousel;-->
+        <!--//建造实例-->
+        <!--carousel.render({-->
+            <!--elem: '#test1'-->
+            <!--,width: '100%' //设置容器宽度-->
+            <!--,arrow: 'always' //始终显示箭头-->
+            <!--,height:'600px'//设置容器高度-->
+            <!--//,anim: 'updown' //切换动画方式-->
+        <!--});-->
+    <!--});-->
+<!--</script>-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>carousel模块快速使用</title>
+    <link rel="stylesheet" href="/static/build/layui.css" media="all">
+</head>
+<body>
+<!-- <h1>后台首页</h1> -->
+<div class="layui-carousel" id="test1" align="center">
+    <div carousel-item>
+        <div><img src="__STATIC__/20170416.jpg" alt=""></div>
+        <div><img src="__STATIC__/ohhdv.jpg" alt=""></div>
+        <div><img src="__STATIC__/20183.jpg" alt=""></div>
+    </div>
+
+</div>
+
+<script src="/static/build/layui.js"></script>
+<script>
+    layui.use('carousel', function(){
+        var carousel = layui.carousel;
+        //建造实例
+        carousel.render({
+            elem: '#test1'
+            ,width: '1330px' //设置容器宽度
+            ,height: '640px'
+            ,arrow: 'always' //始终显示箭头
+            //,anim: 'updown' //切换动画方式
+            ,autoplay:'true'
+        });
+    });
+</script>
+</body>
+</html>

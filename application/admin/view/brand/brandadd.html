@@ -1,0 +1,127 @@
+    {/*内容主体区域*/}
+    <div style="padding: 15px; width:500px">
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+              <label class="layui-form-label">品牌名称</label>
+              <div class="layui-input-block">
+                  <input type="text" name="brand_name" required  lay-verify="required" placeholder="请输入品牌名称" autocomplete="off" class="layui-input">
+              </div><!---->
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">品牌网址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="brand_url" required lay-verify="required"  placeholder="请输入品牌网址" autocomplete="off" class="layui-input">
+                </div><!---->
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">上传logo</label>
+                <div class="layui-input-block">
+                    <input type="hidden" name="brand_logo" required lay-verify="required" autocomplete="off" class="layui-input" id="brand_logo">
+                    <button type="button" class="layui-btn" id="logo">点击上传图片</button>
+                    <br>
+                    <p>&nbsp;&nbsp;</p>
+                    <img class="layui-upload-img" id="demo1" width="150px" height="150px">
+                </div>
+            </div>
+            <!--<div class="layui-form-item">-->
+                <!--<label class="layui-form-label">品牌logo</label>-->
+                <!--<div class="layui-input-block">-->
+                    <!--<input type="hidden" name="brand_logo" required autocomplete="off" class="layui-input" id="brand_logo">-->
+                    <!--<button type="button" class="layui-btn" id="logo">-->
+                        <!--<i class="layui-icon">&#xe67c;</i>上传图片-->
+                    <!--</button>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="layui-form-item">
+              <label class="layui-form-label">品牌描述</label>
+              <div class="layui-input-block">
+                  <textarea name="brand_describe" required lay-verify="required" placeholder="请输入品牌描述" class="layui-textarea"></textarea>
+              </div><!---->
+            </div>
+            <div class="layui-form-item">
+            <label class="layui-form-label">是否展示</label>
+            <div class="layui-input-block">
+                <input type="radio" name="is_show" value="1" title="是" checked>
+                <input type="radio" name="is_show" value="2" title="否">
+            </div>
+            </div>
+            <div class="layui-form-item">
+              <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+              </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        $(function(){
+            layui.use(['form','layer','upload'],function (){
+                var form = layui.form;
+                var layer = layui.layer;
+                var upload = layui.upload;
+                //
+                //普通图片上传
+                var uploadInst = upload.render({
+                    elem: '#logo'
+                    ,url: "{:url('Brand/brandLogo')}"
+                    ,before: function(obj){
+                        //预读本地文件示例，不支持ie8
+                        obj.preview(function(index, file, result){
+                            //console.log(index); //得到文件索引
+                            //console.log(file); //得到文件对象
+                            $('#demo1').attr('src', result); //图片链接（base64）
+                        });
+                    },
+                    done: function(res){
+                            layer.msg(res.font,{icon:res.code});
+                            if (res.code==1) {
+                                $('#brand_logo').val(res.src);
+                            }
+                        }
+                });
+
+                //执行实例 上传文件
+                // var uploadInst = upload.render({
+                //     elem: '#logo' //绑定元素
+                //     ,url: "{:url('Brand/brandLogo')}" //上传接口
+                //     ,done: function(res){
+                //         layer.msg(res.font,{icon:res.code});
+                //         if (res.code==1) {
+                //             $('#brand_logo').val(res.src);
+                //         }
+                //     }
+                // });
+                //监听提交
+                form.on('submit(formDemo)', function(data){
+                    $.post(
+                        "{:url('Brand/brandAdd')}",
+                        data.field,  //所有name值
+                        function(res){
+                            layer.msg(res.font,{icon:res.code});
+                            if (res.code==1){
+                                layer.open({
+                                    type:0,
+                                    content:'添加成功,是否进入列表展示?',
+                                    btn:['确定','继续添加'],
+                                    yes:function(index,layero)
+                                    {
+                                        location.href= "{:url('Brand/brandList')}";
+                                    },
+                                    btn2:function(index,layero){//按钮二回到
+                                        location.href= "{:url('Brand/brandAdd')}";
+                                    },
+
+                                });
+                            }
+                        },
+                        'json'
+                    )
+                    return false;
+                });
+            })
+            //分类展示栏
+            $('#b').attr('class','layui-nav-item layui-nav-itemed')
+            $('#b1').attr('class','layui-this')
+        })
+    </script>

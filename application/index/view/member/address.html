@@ -1,0 +1,177 @@
+
+{include file="public/up"/}
+<!--End Header End-->
+<div class="i_bg bg_color">
+    <!--Begin 用户中心 Begin -->
+	<div class="m_content">
+        {include file="public/left"/}
+        <div class="m_right">
+            <div class="mem_tit">
+                添加新的收货地址
+            </div>
+            <table border="0" class="add_tab" style="width:930px;"  cellspacing="0" cellpadding="0">
+                <tr>
+                    <td width="135" align="right">配送地区</td>
+                    <td colspan="3" style="font-family:'宋体';">
+                        <select name="province" class="area" id="province">
+                            <option value="" selected="selected">--请选择--</option>
+                            {volist name='province' id='v'}
+                            <option value="{$v.id}">{$v.name}</option>
+                            {/volist}
+                        </select>
+                        <select name="city" class="area" id="city">
+                            <option value="" selected="selected">--请选择--</option>
+
+                        </select>
+                        <select name="district" class="area" id="district">
+                            <option value="" selected="selected">--请选择--</option>
+
+                        </select>
+                        （必填）
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">收货人姓名</td>
+                    <td style="font-family:'宋体';"><input type="text"  name="consignee_name" id="consignee_name" placeholder="姓名" class="add_ipt" />（必填）</td>
+                    <td align="right">电子邮箱</td>
+                    <td style="font-family:'宋体';"><input type="text" name="email" id="email" placeholder="列如:****@qq.com" class="add_ipt" />（必填）</td>
+                </tr>
+                <tr>
+                    <td align="right">详细地址</td>
+                    <td style="font-family:'宋体';"><input type="text" name="detailed_address" id="detailed_address" placeholder="填写地址" class="add_ipt" />（必填）</td>
+                    <td align="right">手机</td>
+                    <td style="font-family:'宋体';"><input type="text" name="consignee_tel" maxlength="11" id="consignee_tel" placeholder="列如:136****6587"  class="add_ipt" />（必填）</td>
+                </tr>
+                <tr>
+                    <td  colspan="4">
+                        <input type="checkbox" id="is_default" value="1">是否设置为默认收货地址
+                    </td>
+                </tr>
+
+            </table>
+            <p align="right">
+                &nbsp; &nbsp; <a href="#" class="add_b" id="btn">确认添加</a>
+            </p>
+            <p></p>
+            <div class="mem_tit">收货地址</div>
+            {volist name='userList' id='v'}
+			<div class="address" bcolor="{$v.is_default}">
+            	<div class="a_close" address_id="{$v.id}"><a href="#"><img src="__STATIC__/index/images/a_close.png" /></a></div>
+                <table border="0" class="add_t" align="center" style="width:98%; margin:10px auto;" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td align="right" width="80">收货人姓名：</td>
+                        <td>{$v.consignee_name}</td>
+                    </tr>
+                    <tr>
+                        <td align="right">详细地址：</td>
+                        <td>{$v.province} {$v.city} {$v.district}</td>
+                    </tr>
+                    <tr>
+                        <td align="right">手机：</td>
+                        <td>{$v.consignee_tel}</td>
+                    </tr>
+                    <tr>
+                        <td align="right">电子邮箱：</td>
+                        <td>{$v.email}</td>
+                    </tr>
+                </table>
+                <p align="right">
+                	<a href="#" style="color:#ff4e00;" class="default" default_id="{$v.id}">设为默认</a>&nbsp; &nbsp; &nbsp; &nbsp; <a href="{:url('Member/compile')}?id={$v.id}" style="color:#ff4e00;">编辑</a>&nbsp; &nbsp; &nbsp; &nbsp;
+                </p>
+            </div>
+            {/volist}
+
+
+        </div>
+    </div>
+	<!--End 用户中心 End-->
+    <script>
+        $(function () {
+            layui.use(['layer','form'],function(){
+                var layer=layui.layer;
+                var form=layui.form;
+                /** 下拉菜单内容改变事件*/
+                $('.area').change(function () {
+                    var _this = $(this);
+                    var id = _this.val();
+                    _this.nextAll('select').html("<option value=''>--请选择--</option>");
+                    $.post(
+                        "{:url('Member/address')}",
+                        {id:id},
+                        function (result) {
+                            // console.log(result);
+                            var _option = " <option value=''>--请选择--</option> ";
+                            for(var i in result){
+                                _option +="<option value='"+result[i]['id']+"'>"+result[i]['name']+"</option>>";
+                            }
+                            // console.log(_option)
+                            _this.next('select').html(_option)
+                        },
+                        'json'
+                    )
+                });
+                /** 点击添加*/
+                $('#btn').click(function () {
+                    var province = $('#province').val();
+                    var city = $('#city').val();
+                    var district = $('#district').val();
+                    var consignee_name = $('#consignee_name').val();
+                    var email = $('#email').val();
+                    var detailed_address = $('#detailed_address').val();
+                    var consignee_tel = $('#consignee_tel').val();
+                    var is_default = $('#is_default').prop('checked');
+                    $.post(
+                        "{:url('Member/addressAdd')}",
+                        {province:province,city:city,district:district,consignee_name:consignee_name,email:email,detailed_address:detailed_address,consignee_tel:consignee_tel,is_default:is_default},
+                        function (result) {
+                            // console.log(result)
+                            layer.msg(result.font,{icon:result.code});
+                            if(result.code==1){
+                                location.href="{:url('member/address')}";
+                            }
+                        },
+                        'json'
+                    )
+                })
+                /** 点击删除*/
+                $(document).on('click','.a_close',function () {
+                    $(this).parent().remove()
+                    var address_id = $(this).attr('address_id');
+                    $.post(
+                        "{:url('Member/addressDel')}",
+                        {address_id:address_id},
+                        function (result) {
+                            // console.log(result)
+                            layer.msg(result.font,{icon:result.code});
+                        },
+                        'json'
+                    )
+                })
+                /** 默认边框*/
+                var bcolor =$('.address');
+                for(var i=0;i<bcolor.length;i++){
+                    var col =bcolor.eq(i).attr('bcolor');
+                    if(col==1){
+                        bcolor.eq(i).css('border-color','#FF4E00');
+                    }
+                }
+                /** 点击默认*/
+                $('.default').click(function () {
+                    var _this = $(this);
+                    var default_id = _this.attr('default_id');
+                    $.post(
+                        "{:url('Member/defaults')}",
+                        {default_id:default_id},
+                        function (result) {
+                            layer.msg(result.font,{icon:result.code});
+                            if(result.code==1){
+                                location.href="{:url('member/address')}"
+                            }
+                        },
+                        'json'
+                    )
+                })
+
+            });
+        })
+    </script>

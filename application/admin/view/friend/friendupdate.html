@@ -1,0 +1,55 @@
+{/*内容主体区域*/}
+<div style="padding: 15px; width:500px">
+    <form class="layui-form" action="">
+        <input type="hidden" name="friend_id" value="{$data.friend_id}">
+        <div class="layui-form-item">
+            <label class="layui-form-label">友链名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="friend_name" lay-verify="required" required value="{$data.friend_name}"  placeholder="请输入友链名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">友链网址</label>
+            <div class="layui-input-block">
+                <input type="text" name="friend_url" lay-verify="required" required value="{$data.friend_url}" placeholder="请输入友链网址" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        $(function(){
+        layui.use(['form','layer'], function(){
+            var form = layui.form;
+            var layer = layui.layer;
+
+            //监听提交
+            form.on('submit(formDemo)', function(data){
+                $.post(
+                    "{:url('Friend/FriendUpdate')}",
+                    data.field,  //所有name值
+                    function(res){
+                        // console.log(res)
+                        layer.msg(res.font,{icon:res.code});
+                        if (res.code==1){
+                            layer.confirm('修改成功,是否进入列表展示?', {icon: 1, title:'提示'},function(){
+                                location.href= "{:url('Friend/FriendList')}";
+                            })
+                        }
+                    },
+                    'json'
+                )
+                return false;
+            });
+        })
+            $('#e').attr('class','layui-nav-item layui-nav-itemed')
+            $('#e2').attr('class','layui-this')
+
+        })
+    </script>
+</div>

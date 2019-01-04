@@ -1,0 +1,63 @@
+{/*内容主体区域*/}
+<div style="padding: 15px; width:500px">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">网站名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="WEB_NAME" required lay-verify="required" value="{$info.WEB_NAME??''}" placeholder="请输入名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">网站地址</label>
+            <div class="layui-input-block">
+                <input type="text" name="WEB_URL" required value="{$info.WEB_URL??''}" lay-verify="required" placeholder="请输入地址" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">网站版权</label>
+            <div class="layui-input-block">
+                <input type="text" name="WEB_COPYRIGHT" required lay-verify="required" value="{$info.WEB_COPYRIGHT??''}" placeholder="请输入版权" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">网站备案号</label>
+            <div class="layui-input-block">
+                <input type="text" name="WEB_RECORD" required value="{$info.WEB_RECORD??''}" lay-verify="required" placeholder="请输入备案号" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(function(){
+        layui.use(['form','layer'], function(){
+            var form = layui.form;
+            var layer = layui.layer;
+            /*监听提交 提交数据*/
+            form.on('submit(formDemo)', function(data){
+                // layer.msg(JSON.stringify(data.field));
+                $.post(
+                    "{:url('System/system')}",
+                    data.field,
+                    function(result){
+                        layer.msg(result.font,{icon:result.code});
+                        if (result.code==1) {
+                            location.href="{:url('System/system')}";
+                        }
+                    },
+                    'json'
+                );
+                return false;
+            });
+        });
+        $('#f').attr('class','layui-nav-item layui-nav-itemed');
+        $('#f1').attr('class','layui-this')
+
+
+    })
+</script>

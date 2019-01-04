@@ -1,0 +1,156 @@
+{include file="public/top"}
+<script type="text/javascript" src="__STATIC__/index/js/n_nav.js"></script>
+
+<div class="i_bg">  
+    <div class="content mar_20">
+    	<img src="__STATIC__/index/images/img2.jpg" />        
+    </div>
+    
+    <!--Begin 第二步：确认订单信息 Begin -->
+    <div class="content mar_20">
+    	<div class="two_bg">
+        	<div class="two_t">
+            	<span class="fr"><a href="#">修改</a></span>商品列表
+            </div>
+            <table border="0" class="car_tab" style="width:1110px;" cellspacing="0" cellpadding="0">
+              <tr>
+                <td class="car_th" width="550">商品名称</td>
+                <td class="car_th" width="150">购买数量</td>
+                <td class="car_th" width="130">小计</td>
+                <td class="car_th" width="140">返还积分</td>
+              </tr>
+                {volist name='sttle' id='v'}
+              <tr class="url" cart_id="{$v.cart_id}">
+                <td>
+                    <div class="c_s_img"><img src="__ROOT__/goodsimg/{$v.goods_img}" width="73" height="73" /></div>
+                    {$v.goods_name}
+                </td>
+                <td align="center">{$v.buy_number}</td>
+                <td align="center" style="color:#ff4e00;" class="sum">{$v.buy_number*$v.self_price}</td>
+                <td align="center" class="score">{$v.goods_score*$v.buy_number}R</td>
+              </tr>
+                {/volist}
+              <tr>
+                <td colspan="5" align="right" style="font-family:'Microsoft YaHei';">
+                    商品总价：￥<span id="price">1899.00</span> ； 返还积分 <span id="score">56</span>R
+                </td>
+              </tr>
+            </table>
+            
+            <div class="two_t">
+            	<span class="fr"><a href="#">修改</a></span>收货人信息
+            </div>
+            <div style="overflow-y:auto; height: 210px;">
+                {volist name="$addressInfo" id="v"}
+                <table border="0" class="peo_tab" style="width:1110px; margin-top: 10px" cellspacing="0" cellpadding="0">
+                    <tr>
+                        {if condition="$v.is_default  eq '1' "}
+                        <td rowspan="2"><input type="radio" value="{$v.id}" name="is_default" checked></td>
+                        {else/}
+                        <td rowspan="2"><input type="radio" value="{$v.id}" name="is_default"></td>
+                        {/if}
+                        <td class="p_td" width="160">收货人姓名</td>
+                        <td width="395">{$v.consignee_name}</td>
+                        <td class="p_td" width="160">电子邮件</td>
+                        <td width="395">{$v.email}</td>
+                    </tr>
+                    <tr>
+                        <td class="p_td">详细信息</td>
+                        <td>{$v.detailed_address}</td>
+                        <td class="p_td">手机</td>
+                        <td>{$v.consignee_tel}</td>
+                    </tr>
+                </table>
+                {/volist}
+            </div>
+            <div class="two_t">
+            	支付方式
+            </div>
+            <ul class="pay">
+                <li class="checked" type="1">支付宝<div class="ch_img" ></div></li>
+                <li type="2">转账<div class="ch_img" ></div></li>
+                <li type="3">货到付款<div class="ch_img" ></div></li>
+            </ul>
+
+            <div class="two_t">
+            	其他信息
+            </div>
+            <table border="0" class="car_tab" style="width:1110px;" cellspacing="0" cellpadding="0">
+              <tr valign="top">
+                <td align="right" style="padding-right:0;"><b style="font-size:14px;">订单附言：</b></td>
+                <td style="padding-left:0;"><textarea class="add_txt" style="width:860px; height:50px;"></textarea></td>
+              </tr>
+
+            </table>
+            
+            <table border="0" style="width:900px; margin-top:20px;" cellspacing="0" cellpadding="0">
+
+              <tr height="70">
+                <td align="right">
+                	<b style="font-size:14px;">应付款金额：￥<span style="font-size:22px; color:#ff4e00;" id="sonsum">2899</span></b>
+                </td>
+              </tr>
+              <tr height="70">
+                <td align="right"><a href="javascript:;" id="affirmorder"><img src="__STATIC__/index/images/btn_sure.gif" /></a></td>
+              </tr>
+            </table>
+        	
+        </div>
+    </div>
+	<!--End 第二步：确认订单信息 End-->
+    <script>
+        $(function () {
+            layui.use(['layer'],function(){
+                var layer=layui.layer;
+
+            var price = 0;
+            var score = 0;
+            $('.sum').each(function (index) {
+                price+=parseFloat($(this).text())
+            })
+
+            $('.score').each(function (index) {
+                score+=parseInt($(this).text())
+            })
+            $('#price').text(price.toFixed(2))
+            $('#score').text(score)
+            $('#sonsum').text(price.toFixed(2))
+            // 支付方式
+            var zhifu = $("ul[class=pay]").find('li');
+            zhifu.click(function () {
+                var _this = $(this);
+                _this.siblings('li').removeClass('checked');
+                _this.addClass('checked');
+            })
+
+            // 确认订单
+            $('#affirmorder').click(function () {
+                // 购物车商品id
+                var cart_id = "{:input('get.cart_id')}";
+                //收货地址
+                var _radio=$(':radio');
+                var address_id;
+                _radio.each(function (index) {
+                    if($(this).prop('checked')==true){
+                        address_id = $(this).val()
+                    }
+                });
+                // 支付方式
+                var pay_type = $(".pay").children('li[class=checked]').attr('type')
+                // 留言
+                var add_txt = $('.add_txt').val()
+                $.post(
+                    "{:url('Order/confirmOrder')}",
+                    {cart_id:cart_id,address_id:address_id,pay_type:pay_type,add_txt:add_txt},
+                    function (result) {
+                        layer.msg(result.font,{icon:result.code});
+                        if(result.code==1){
+                            location.href="{:url('Order/orderSuccess')}?order_id="+result.order_id;
+                        }
+                    },
+                    'json'
+                )
+            })
+            })
+        })
+    </script>

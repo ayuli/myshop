@@ -1,0 +1,89 @@
+<div style="padding: 15px; width:800px">
+    <form class="layui-form" action="">
+        <input type="hidden" name="admin_id" value="{$admin_id}">
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色名称</label>
+            <div class="layui-input-block">
+                {volist name='roleInfo' id='v'}
+                    {in name="$v.role_id" value="$adminRole"}
+                    <input type="checkbox" name="role_id[]" checked value="{$v.role_id}" title="{$v.role_name}" lay-filter="text">
+                    {else/}
+                    <input type="checkbox" name="role_id[]" value="{$v.role_id}" title="{$v.role_name}" lay-filter="text">
+                    {/in}
+                {/volist}
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(function () {
+        //Demo
+        layui.use(['form','layer'], function(){
+            var form = layui.form;
+            var layer = layui.layer;
+
+            // 全部复选监听
+            form.on('checkbox(filter)', function(data){
+                var _this=$(this)
+                if(data.elem.checked==true){
+                    _this.parent().next().find("input").prop('checked',true)
+                }else{
+                    _this.parent().next().find("input").prop('checked',false)
+                }
+                form.render(); //更新全部
+            });
+            // 单个复选监听
+            form.on('checkbox(text)', function(data){
+                var _this = $(this);
+                // console.log(_this)
+                if(data.elem.checked==true){
+                    _this.parent().prev().find('input').prop('checked',true)
+                }else{
+                    //判断当前节点的所有兄弟节点
+                    var num=0;
+                    var _input = _this.siblings('input');
+                    _input.each(function(index) {
+                        if($(this).prop('checked')==false){
+                            num+=1;
+                        }
+                        if(num==_input.length){
+                            _this.parent().prev().find('input').prop('checked',false)
+                        }
+
+                    })
+                }
+
+                form.render(); //更新全部
+            });
+
+
+            // 监听提交
+            form.on('submit(formDemo)', function(data){
+                $.post(
+                    "{:url('Admin/adminGiverole')}",
+                    data.field,
+                    function (result) {
+                        // console.log(result)
+                        layer.msg(result.font,{icon:result.code});
+                        if(result.code==1){
+                            location.href= "{:url('Admin/adminList')}";
+                        }
+                    },'json'
+                )
+                return false;
+            });
+        });
+    })
+
+
+    $('#d').attr('class','layui-nav-item layui-nav-itemed')
+    $('#d2').attr('class','layui-this')
+</script>
